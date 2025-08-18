@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const envPath = path.join(__dirname, '../webapp/.env.local');
+const envPath = path.join(__dirname, '../frontend/.env.local');
 
 console.log('🔍 環境変数設定を確認中...\n');
 

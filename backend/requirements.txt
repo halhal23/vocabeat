@@ -1,0 +1,21 @@
+# FastAPI とその関連パッケージ
+fastapi>=0.100.0
+uvicorn[standard]>=0.24.0
+
+# Supabase クライアント
+supabase==2.8.0
+
+# 環境変数管理
+python-dotenv>=1.0.0
+
+# CORS対応
+python-multipart>=0.0.6
+
+# データバリデーション
+pydantic>=2.0.0
+
+# HTTP クライアント
+httpx>=0.24.0,<0.25.0
+
+# 日時処理
+python-dateutil>=2.8.0

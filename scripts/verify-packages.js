@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const packageJsonPath = path.join(__dirname, '../webapp/package.json');
+const packageJsonPath = path.join(__dirname, '../frontend/package.json');
 
 console.log('🔍 Supabaseパッケージインストールを確認中...\n');
 
@@ -45,7 +45,7 @@ function verifyPackages() {
   console.log('\n📂 実際のインストール確認:');
   
   requiredPackages.forEach(packageName => {
-    const modulePath = path.join(__dirname, '../webapp/node_modules', packageName);
+    const modulePath = path.join(__dirname, '../frontend/node_modules', packageName);
     if (fs.existsSync(modulePath)) {
       console.log(`✅ ${packageName} - ファイル確認済み`);
     } else {
@@ -74,7 +74,7 @@ function verifyPackages() {
   } else {
     console.log('\n❌ SETUP-004未完了: パッケージのインストールに問題があります');
     console.log('\n🔧 解決方法:');
-    console.log('   cd webapp && npm install @supabase/supabase-js @supabase/auth-ui-react @supabase/auth-ui-shared');
+    console.log('   cd frontend && npm install @supabase/supabase-js @supabase/auth-ui-react @supabase/auth-ui-shared');
   }
 
   return allInstalled;

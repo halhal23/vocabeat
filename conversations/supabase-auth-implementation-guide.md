@@ -106,7 +106,7 @@ CREATE POLICY "Users can manage own learning records" ON public.learning_records
 ### 3. 必要なパッケージインストール
 
 ```bash
-cd webapp
+cd frontend
 npm install @supabase/supabase-js @supabase/auth-ui-react @supabase/auth-ui-shared
 ```
 
