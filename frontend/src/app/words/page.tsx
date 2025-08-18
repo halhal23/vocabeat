@@ -5,6 +5,7 @@ import { WordsHeader } from "@/components/words/words-header"
 import { WordsFilters } from "@/components/words/words-filters"
 import { WordCard } from "@/components/words/word-card"
 import { WordsEmptyState } from "@/components/words/words-empty-state"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 
 const mockWords = [
   {
@@ -73,25 +74,27 @@ export default function WordsPage() {
   })
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <WordsHeader />
-      
-      <WordsFilters 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedDifficulty={selectedDifficulty}
-        setSelectedDifficulty={setSelectedDifficulty}
-      />
+    <ProtectedRoute>
+      <div className="container mx-auto py-6 space-y-6">
+        <WordsHeader />
+        
+        <WordsFilters 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedDifficulty={selectedDifficulty}
+          setSelectedDifficulty={setSelectedDifficulty}
+        />
 
-      <div className="grid gap-4">
-        {filteredWords.map((word) => (
-          <WordCard key={word.id} word={word} />
-        ))}
+        <div className="grid gap-4">
+          {filteredWords.map((word) => (
+            <WordCard key={word.id} word={word} />
+          ))}
+        </div>
+
+        {filteredWords.length === 0 && (
+          <WordsEmptyState searchTerm={searchTerm} />
+        )}
       </div>
-
-      {filteredWords.length === 0 && (
-        <WordsEmptyState searchTerm={searchTerm} />
-      )}
-    </div>
+    </ProtectedRoute>
   )
 }

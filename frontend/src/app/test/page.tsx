@@ -5,6 +5,7 @@ import { TestStartScreen } from "@/components/test/test-start-screen"
 import { TestResultsScreen } from "@/components/test/test-results-screen"
 import { QuestionProgress } from "@/components/test/question-progress"
 import { QuestionCard } from "@/components/test/question-card"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 
 const mockQuestions = [
   {
@@ -85,38 +86,44 @@ export default function TestPage() {
 
   if (!testStarted) {
     return (
-      <TestStartScreen 
-        questionCount={mockQuestions.length}
-        onStartTest={handleStartTest}
-      />
+      <ProtectedRoute>
+        <TestStartScreen 
+          questionCount={mockQuestions.length}
+          onStartTest={handleStartTest}
+        />
+      </ProtectedRoute>
     )
   }
 
   if (testCompleted) {
     return (
-      <TestResultsScreen 
-        testResults={testResults}
-        onStartTest={handleStartTest}
-      />
+      <ProtectedRoute>
+        <TestResultsScreen 
+          testResults={testResults}
+          onStartTest={handleStartTest}
+        />
+      </ProtectedRoute>
     )
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <QuestionProgress 
-        currentQuestionIndex={currentQuestionIndex}
-        totalQuestions={mockQuestions.length}
-      />
-      
-      <QuestionCard
-        question={currentQuestion}
-        selectedAnswer={selectedAnswer}
-        showResult={showResult}
-        isLastQuestion={isLastQuestion}
-        onAnswerSelect={handleAnswerSelect}
-        onSubmitAnswer={handleSubmitAnswer}
-        onNextQuestion={handleNextQuestion}
-      />
-    </div>
+    <ProtectedRoute>
+      <div className="container mx-auto py-6 space-y-6">
+        <QuestionProgress 
+          currentQuestionIndex={currentQuestionIndex}
+          totalQuestions={mockQuestions.length}
+        />
+        
+        <QuestionCard
+          question={currentQuestion}
+          selectedAnswer={selectedAnswer}
+          showResult={showResult}
+          isLastQuestion={isLastQuestion}
+          onAnswerSelect={handleAnswerSelect}
+          onSubmitAnswer={handleSubmitAnswer}
+          onNextQuestion={handleNextQuestion}
+        />
+      </div>
+    </ProtectedRoute>
   )
 }

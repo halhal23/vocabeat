@@ -1,10 +1,19 @@
 "use client"
 
 import Link from "next/link"
-import { Code2, User, Menu } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Code2, User, Menu, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function Header() {
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push('/')
+  }
   return (
     <header className="fixed top-0 z-50 w-full px-6 py-4">
       <div className="container mx-auto">
@@ -49,10 +58,27 @@ export function Header() {
               <Button variant="ghost" className="md:hidden glass hover:bg-white/10">
                 <Menu className="h-5 w-5" />
               </Button>
-              <Button className="gradient-primary text-white font-medium px-6 py-2 rounded-xl hover:shadow-glow transition-all duration-300 hover:scale-105">
-                <User className="mr-2 h-4 w-4" />
-                <Link href="/auth">ログイン</Link>
-              </Button>
+              
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground hidden md:inline">
+                    {user.email}
+                  </span>
+                  <Button 
+                    onClick={handleSignOut}
+                    variant="outline" 
+                    className="glass hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-300"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    ログアウト
+                  </Button>
+                </div>
+              ) : (
+                <Button className="gradient-primary text-white font-medium px-6 py-2 rounded-xl hover:shadow-glow transition-all duration-300 hover:scale-105">
+                  <User className="mr-2 h-4 w-4" />
+                  <Link href="/auth">ログイン</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
