@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabeat Extension Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0f0f0f;
+            color: #fff;
+        }
+        .container {
+            background: rgba(102, 54, 235, 0.1);
+            border: 1px solid rgba(102, 54, 235, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); }
+        button {
+            background: linear-gradient(135deg, #6636eb 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { opacity: 0.9; }
+        .log {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .word-test {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+        }
+        input {
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Vocabeat Extension Test Page</h1>
+    
+    <div class="container">
+        <h2>📊 Extension Status</h2>
+        <div id="extensionStatus" class="status info">
+            Checking extension status...
+        </div>
+        <button onclick="checkExtensionStatus()">Refresh Status</button>
+        <button onclick="openGoogleTranslate()">Open Google Translate</button>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Word Extraction Test</h2>
+        <p>Test the word extraction logic locally:</p>
+        
+        <div class="word-test">
+            <label>English Word:</label>
+            <input type="text" id="testEnglish" placeholder="hello" value="hello">
+        </div>
+        
+        <div class="word-test">
+            <label>Japanese Translation:</label>
+            <input type="text" id="testJapanese" placeholder="こんにちは" value="こんにちは">
+        </div>
+        
+        <button onclick="testWordExtraction()">Test Word Extraction</button>
+        <button onclick="simulateTranslation()">Simulate Translation Event</button>
+    </div>
+
+    <div class="container">
+        <h2>💾 Storage Test</h2>
+        <button onclick="testStorage()">Test Local Storage</button>
+        <button onclick="viewStoredWords()">View Stored Words</button>
+        <button onclick="clearStorage()">Clear All Data</button>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Supabase Test</h2>
+        <button onclick="testSupabaseConnection()">Test Connection</button>
+        <button onclick="testSaveWord()">Test Save Word</button>
+        <button onclick="viewSupabaseStats()">View Stats</button>
+    </div>
+
+    <div class="container">
+        <h2>📝 Console Log</h2>
+        <div id="logOutput" class="log">
+            Console output will appear here...
+        </div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        // Redirect console.log to our log display
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        const logElement = document.getElementById('logOutput');
+        
+        function addLogEntry(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                log: '#fff',
+                error: '#ff6b6b',
+                warn: '#ffd93d',
+                success: '#51cf66'
+            };
+            
+            logElement.innerHTML += `<div style="color: ${colors[type]};">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog(...args);
+            addLogEntry(args.join(' '), 'log');
+        };
+        
+        console.error = (...args) => {
+            originalError(...args);
+            addLogEntry('ERROR: ' + args.join(' '), 'error');
+        };
+        
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addLogEntry('WARN: ' + args.join(' '), 'warn');
+        };
+
+        // Test functions
+        async function checkExtensionStatus() {
+            const statusEl = document.getElementById('extensionStatus');
+            
+            try {
+                if (typeof chrome !== 'undefined' && chrome.runtime) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Chrome extension API available';
+                    console.log('Chrome extension context detected');
+                    
+                    // Try to communicate with background script
+                    chrome.runtime.sendMessage({type: 'PING'}, (response) => {
+                        if (chrome.runtime.lastError) {
+                            console.error('Background script communication failed:', chrome.runtime.lastError);
+                        } else {
+                            console.log('Background script response:', response);
+                        }
+                    });
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Not running as Chrome extension';
+                    console.log('Not in Chrome extension context');
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Extension API error: ' + error.message;
+                console.error('Extension status check failed:', error);
+            }
+        }
+
+        function openGoogleTranslate() {
+            window.open('https://translate.google.com/?sl=en&tl=ja&text=hello&op=translate', '_blank');
+        }
+
+        function testWordExtraction() {
+            const english = document.getElementById('testEnglish').value;
+            const japanese = document.getElementById('testJapanese').value;
+            
+            console.log('Testing word extraction...');
+            console.log('English:', english);
+            console.log('Japanese:', japanese);
+            
+            // Simulate the word extraction logic
+            const isValidWord = /^[a-zA-Z]+$/.test(english) && 
+                               english.length >= 2 && 
+                               english.length <= 30;
+            
+            console.log('Is valid word:', isValidWord);
+            
+            if (isValidWord) {
+                const word = {
+                    english_word: english.toLowerCase(),
+                    japanese_meaning: japanese,
+                    translation_source: 'google_translate',
+                    confidence_level: 0.8,
+                    review_count: 0,
+                    difficulty: english.length <= 4 ? 'easy' : english.length <= 8 ? 'medium' : 'hard'
+                };
+                
+                console.log('✅ Extracted word object:', word);
+            } else {
+                console.warn('❌ Word validation failed');
+            }
+        }
+
+        function simulateTranslation() {
+            const english = document.getElementById('testEnglish').value;
+            const japanese = document.getElementById('testJapanese').value;
+            
+            console.log('Simulating translation event...');
+            
+            const translationEvent = {
+                sourceText: english,
+                targetText: japanese,
+                sourceLanguage: 'en',
+                targetLanguage: 'ja',
+                timestamp: Date.now(),
+                url: window.location.href
+            };
+            
+            console.log('Translation event:', translationEvent);
+            
+            // If in extension context, send to background
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                chrome.runtime.sendMessage({
+                    type: 'WORD_EXTRACTED',
+                    payload: translationEvent
+                }, (response) => {
+                    if (response) {
+                        console.log('✅ Background script response:', response);
+                    } else {
+                        console.error('❌ No response from background script');
+                    }
+                });
+            }
+        }
+
+        async function testStorage() {
+            console.log('Testing storage operations...');
+            
+            if (typeof chrome !== 'undefined' && chrome.storage) {
+                try {
+                    // Test storing data
+                    const testData = { test: 'vocabeat-test', timestamp: Date.now() };
+                    await chrome.storage.local.set({ vocabeatTest: testData });
+                    console.log('✅ Stored test data:', testData);
+                    
+                    // Test retrieving data
+                    const result = await chrome.storage.local.get(['vocabeatTest']);
+                    console.log('✅ Retrieved test data:', result.vocabeatTest);
+                    
+                } catch (error) {
+                    console.error('❌ Storage test failed:', error);
+                }
+            } else {
+                console.warn('❌ Chrome storage API not available');
+            }
+        }
+
+        async function viewStoredWords() {
+            console.log('Viewing stored words...');
+            
+            if (typeof chrome !== 'undefined' && chrome.storage) {
+                try {
+                    const result = await chrome.storage.local.get(['recentWords', 'stats']);
+                    console.log('📚 Recent words:', result.recentWords || []);
+                    console.log('📊 Stats:', result.stats || {});
+                } catch (error) {
+                    console.error('❌ Failed to retrieve stored words:', error);
+                }
+            }
+        }
+
+        async function clearStorage() {
+            console.log('Clearing all storage...');
+            
+            if (typeof chrome !== 'undefined' && chrome.storage) {
+                try {
+                    await chrome.storage.local.clear();
+                    await chrome.storage.sync.clear();
+                    console.log('✅ All storage cleared');
+                } catch (error) {
+                    console.error('❌ Failed to clear storage:', error);
+                }
+            }
+        }
+
+        function testSupabaseConnection() {
+            console.log('Testing Supabase connection...');
+            
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                chrome.runtime.sendMessage({
+                    type: 'TEST_SUPABASE'
+                }, (response) => {
+                    if (response && response.success) {
+                        console.log('✅ Supabase connection successful');
+                    } else {
+                        console.error('❌ Supabase connection failed:', response?.error);
+                    }
+                });
+            }
+        }
+
+        function testSaveWord() {
+            const testWord = {
+                english_word: 'test',
+                japanese_meaning: 'テスト',
+                translation_source: 'google_translate',
+                confidence_level: 0.9,
+                review_count: 0,
+                difficulty: 'easy'
+            };
+            
+            console.log('Testing save word to Supabase...');
+            
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                chrome.runtime.sendMessage({
+                    type: 'WORD_EXTRACTED',
+                    payload: testWord
+                }, (response) => {
+                    if (response && response.success) {
+                        console.log('✅ Word saved successfully');
+                    } else {
+                        console.error('❌ Failed to save word:', response?.error);
+                    }
+                });
+            }
+        }
+
+        function viewSupabaseStats() {
+            console.log('Fetching Supabase stats...');
+            
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                chrome.runtime.sendMessage({
+                    type: 'GET_STATS'
+                }, (response) => {
+                    if (response && response.success) {
+                        console.log('📊 Supabase stats:', response.data);
+                    } else {
+                        console.error('❌ Failed to get stats:', response?.error);
+                    }
+                });
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logOutput').innerHTML = 'Console cleared...';
+        }
+
+        // Auto-check status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Vocabeat Extension Test Page loaded');
+            checkExtensionStatus();
+        });
+    </script>
+</body>
+</html>
