@@ -11,8 +11,8 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex justify-center p-4 pt-12">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex justify-center p-4 sm:p-6 pt-8 sm:pt-12">
+      <div className="w-full max-w-sm sm:max-w-md space-y-4 sm:space-y-6">
         <AuthHeader />
         
         {/* ログイン・登録切り替えタブ */}
@@ -20,7 +20,7 @@ export default function AuthPage() {
           <Button
             onClick={() => setIsLogin(true)}
             variant="ghost"
-            className={`rounded-lg transition-all duration-200 ${
+            className={`rounded-lg transition-all duration-200 text-sm sm:text-base ${
               isLogin 
                 ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" 
                 : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -32,7 +32,7 @@ export default function AuthPage() {
           <Button
             onClick={() => setIsLogin(false)}
             variant="ghost"
-            className={`rounded-lg transition-all duration-200 ${
+            className={`rounded-lg transition-all duration-200 text-sm sm:text-base ${
               !isLogin 
                 ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm" 
                 : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -44,13 +44,13 @@ export default function AuthPage() {
         </div>
 
         {/* フォーム表示 */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {isLogin ? <LoginForm /> : <SignUpForm />}
         </div>
         
         {/* フッター */}
         <div className="text-center space-y-3">
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-xs text-gray-500 dark:text-gray-400 px-2">
             {isLogin 
               ? "アカウントをお持ちでない場合は、新規登録をご利用ください。" 
               : "すでにアカウントをお持ちの場合は、ログインをご利用ください。"

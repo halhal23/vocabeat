@@ -27,27 +27,24 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", asChild = false, ...props }, ref) => {
+    const baseClasses = cn(
+      "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      buttonVariants.variant[variant],
+      buttonVariants.size[size],
+      className
+    )
+
     if (asChild) {
+      const { children, ...divProps } = props as React.HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }
       return (
-        <div
-          className={cn(
-            "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-            buttonVariants.variant[variant],
-            buttonVariants.size[size],
-            className
-          )}
-          {...props}
-        />
+        <div className={baseClasses} {...divProps}>
+          {children}
+        </div>
       )
     }
     return (
       <button
-        className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-          buttonVariants.variant[variant],
-          buttonVariants.size[size],
-          className
-        )}
+        className={baseClasses}
         ref={ref}
         {...props}
       />

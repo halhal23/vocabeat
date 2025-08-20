@@ -75,7 +75,7 @@ export default function WordsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="container mx-auto py-6 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <WordsHeader />
         
         <WordsFilters 
@@ -85,7 +85,7 @@ export default function WordsPage() {
           setSelectedDifficulty={setSelectedDifficulty}
         />
 
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {filteredWords.map((word) => (
             <WordCard key={word.id} word={word} />
           ))}

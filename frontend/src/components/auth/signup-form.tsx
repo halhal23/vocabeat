@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Mail, Eye, EyeOff, User } from "lucide-react"
+import { Mail, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 
 export function SignUpForm() {
   const [email, setEmail] = useState("")
@@ -19,7 +19,7 @@ export function SignUpForm() {
   const [success, setSuccess] = useState("")
   
   const { signUp, signInWithGoogle } = useAuth()
-  const router = useRouter()
+  // const router = useRouter()
 
   const handleGoogleSignIn = async () => {
     setLoading(true)

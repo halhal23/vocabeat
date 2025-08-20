@@ -253,3 +253,71 @@ body {
 .animate-neon-glow {
   animation: neon-glow 3s ease-in-out infinite;
 }
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Reduce animation intensity on mobile for better performance */
+  .animate-float {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .animate-tech-pulse {
+    animation: tech-pulse 6s ease-in-out infinite;
+  }
+  
+  /* Optimize glass effects for mobile */
+  .glass {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  
+  .card-tech {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+/* Touch-friendly interactions */
+@media (pointer: coarse) {
+  .hover\:scale-105:hover {
+    transform: scale(1.02);
+  }
+  
+  .hover\:scale-110:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Increase touch targets */
+  button {
+    min-height: 44px;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Enhanced effects for large screens */
+  .glass {
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+  }
+  
+  .card-tech {
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+  }
+}
