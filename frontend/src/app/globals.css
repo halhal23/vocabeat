@@ -261,15 +261,6 @@ body {
     padding-right: 1rem;
   }
   
-  /* Reduce animation intensity on mobile for better performance */
-  .animate-float {
-    animation: float 8s ease-in-out infinite;
-  }
-  
-  .animate-tech-pulse {
-    animation: tech-pulse 6s ease-in-out infinite;
-  }
-  
   /* Optimize glass effects for mobile */
   .glass {
     backdrop-filter: blur(16px);

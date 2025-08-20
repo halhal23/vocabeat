@@ -81,6 +81,8 @@ const config: Config = {
         'tech-pulse': 'tech-pulse 4s ease-in-out infinite',
         'neon-glow': 'neon-glow 3s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
+        'float-delay-2': 'float 6s ease-in-out infinite 2s',
+        'float-delay-4': 'float 6s ease-in-out infinite 4s',
         'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
       },
       fontFamily: {

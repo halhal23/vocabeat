@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/AuthContext"
 
 export function Header() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading } = useAuth()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -71,7 +71,9 @@ export function Header() {
                   {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </Button>
                 
-                {user ? (
+                {loading ? (
+                  <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                ) : user ? (
                   <div className="flex items-center gap-2 sm:gap-3">
                     <span className="text-xs sm:text-sm text-muted-foreground hidden lg:inline truncate max-w-32">
                       {user.email}
