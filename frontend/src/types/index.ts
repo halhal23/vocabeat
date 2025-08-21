@@ -14,7 +14,7 @@ export interface Word {
   sourceText?: string;
   difficulty: 'easy' | 'medium' | 'hard';
   createdAt: Date;
-  lastReviewed?: Date;
+  lastReviewed: Date | null;
   reviewCount: number;
   correctCount: number;
 }
