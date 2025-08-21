@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, TrendingUp } from "lucide-react"
+import { TrendingUp } from "lucide-react"
 
 interface WordData {
   id: string
