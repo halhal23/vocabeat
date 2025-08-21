@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, TrendingUp } from "lucide-react"
 
@@ -24,10 +23,10 @@ interface WordCardProps {
 export function WordCard({ word }: WordCardProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-100 text-green-800 border-green-200'
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'hard': return 'bg-red-100 text-red-800 border-red-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'easy': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+      case 'medium': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+      case 'hard': return 'bg-red-500/20 text-red-400 border border-red-500/30'
+      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
     }
   }
 
@@ -46,63 +45,46 @@ export function WordCard({ word }: WordCardProps) {
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h3 className="text-xl font-semibold">{word.word}</h3>
-              <Badge className={getDifficultyColor(word.difficulty)}>
+    <Card className="card-tech group hover:glow-intense transition-all duration-300">
+      <CardContent className="p-3">
+        <div className="flex justify-between items-start">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-base font-semibold text-foreground truncate tracking-tight">{word.word}</h3>
+              <Badge className={`${getDifficultyColor(word.difficulty)} text-xs px-1.5 py-0.5 font-medium shrink-0 rounded-md`}>
                 {getDifficultyText(word.difficulty)}
               </Badge>
             </div>
-            <p className="text-lg text-muted-foreground">{word.meaning}</p>
-            <p className="text-sm text-muted-foreground italic">
-              &quot;{word.translation}&quot;
-            </p>
+            <p className="text-sm text-muted-foreground leading-tight">{word.meaning}</p>
+            {word.sourceText && (
+              <p className="text-xs text-muted-foreground/70 mt-1 truncate italic">
+                &quot;{word.sourceText}&quot;
+              </p>
+            )}
           </div>
-          <div className="text-right space-y-2">
+
+          <div className="flex items-center gap-2 ml-3 shrink-0">
             {word.reviewCount > 0 && (
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <TrendingUp className="h-3 w-3" />
-                正答率 {getAccuracyRate()}%
+              <div className="flex items-center gap-1 bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20 backdrop-blur-sm">
+                <TrendingUp className="h-3 w-3 text-emerald-400" />
+                <span className="text-emerald-400 font-medium text-xs">{getAccuracyRate()}%</span>
               </div>
             )}
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {word.reviewCount}回復習
+            <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-lg border border-primary/20 backdrop-blur-sm">
+              <span className="text-primary/80 font-medium text-xs">復習 {word.reviewCount}回</span>
             </div>
           </div>
         </div>
-        
-        {word.sourceText && (
-          <div className="border-t pt-4">
-            <p className="text-sm text-muted-foreground mb-2">
-              出典: <span className="italic">&quot;{word.sourceText}&quot;</span>
-            </p>
-            {word.sourceUrl && (
-              <a
-                href={word.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:underline"
-              >
-                {word.sourceUrl}
-              </a>
-            )}
-          </div>
-        )}
-        
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-xs text-muted-foreground">
+
+        <div className="mt-2 pt-2 border-t border-border/50">
+          <p className="text-xs text-muted-foreground/60">
             追加日: {word.createdAt.toLocaleDateString('ja-JP')}
             {word.lastReviewed && (
-              <span> • 最終復習: {word.lastReviewed.toLocaleDateString('ja-JP')}</span>
+              <span className="ml-3 text-muted-foreground/40">
+                最終復習: {word.lastReviewed.toLocaleDateString('ja-JP')}
+              </span>
             )}
           </p>
-          <Button variant="outline" size="sm">
-            今すぐ復習
-          </Button>
         </div>
       </CardContent>
     </Card>
