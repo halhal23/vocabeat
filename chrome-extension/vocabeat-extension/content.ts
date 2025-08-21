@@ -171,7 +171,12 @@ class GoogleTranslateMonitor {
               }
             } else {
               console.log('✅ Message sent successfully:', response)
-              this.showNotification(word)
+              // Only show notification if word was actually saved to DB
+              if (response?.saveResult === 'saved') {
+                this.showNotification(word)
+              } else {
+                console.log(`ℹ️ Word not saved to DB (${response?.saveResult}), skipping content notification`)
+              }
             }
           })
         } catch (error) {

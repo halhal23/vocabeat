@@ -25,8 +25,14 @@ class BackgroundService {
       switch (message.type) {
         case 'WORD_EXTRACTED':
           console.log('📚 Vocabeat: Handling WORD_EXTRACTED message')
-          await this.handleWordExtracted(message.payload)
-          sendResponse({ success: true })
+          const result = await this.handleWordExtracted(message.payload)
+          sendResponse({ success: true, saveResult: result })
+          break
+
+        case 'GET_WORDS':
+          console.log('📚 Vocabeat: Handling GET_WORDS message')
+          const words = await this.getUserWords()
+          sendResponse({ success: true, words })
           break
 
         default:
@@ -45,7 +51,7 @@ class BackgroundService {
     return true as any
   }
 
-  private async handleWordExtracted(word: any) {
+  private async handleWordExtracted(word: any): Promise<'saved' | 'duplicate' | 'error' | 'no_auth'> {
     try {
       console.log('📚 Vocabeat: Processing extracted word:', word.english_word)
 
@@ -71,21 +77,38 @@ class BackgroundService {
       console.log('✅ Vocabeat: Word saved to local storage:', word.english_word)
 
       // Try to save to Supabase
-      await this.saveToSupabase(newWord)
+      const saveResult = await this.saveToSupabase(newWord)
+      console.log('🔍 Save result received:', saveResult)
 
       // Update badge
       await this.updateBadge(wordsToSave.length)
 
-      // Show success notification
-      this.showNotification('success', `Added "${word.english_word}" to your vocabulary!`)
+      // Show appropriate notification based on save result
+      switch (saveResult) {
+        case 'saved':
+          this.showNotification('success', `Added "${word.english_word}" to your vocabulary!`)
+          break
+        case 'duplicate':
+          this.showNotification('success', `"${word.english_word}" is already in your vocabulary`)
+          break
+        case 'no_auth':
+          this.showNotification('success', `"${word.english_word}" saved locally (login required for sync)`)
+          break
+        case 'error':
+          this.showNotification('error', `Failed to save "${word.english_word}". Saved locally instead.`)
+          break
+      }
+
+      return saveResult
 
     } catch (error) {
       console.error('❌ Vocabeat: Error processing word:', error)
       this.showNotification('error', 'Failed to save word. Please try again.')
+      return 'error'
     }
   }
 
-  private async saveToSupabase(word: any) {
+  private async saveToSupabase(word: any): Promise<'saved' | 'duplicate' | 'error' | 'no_auth'> {
     try {
       console.log('🔗 Vocabeat: Attempting to save to Supabase...')
       console.log('📝 Word data received:', word)
@@ -93,12 +116,24 @@ class BackgroundService {
       const supabaseUrl = process.env.PLASMO_PUBLIC_SUPABASE_URL
       const supabaseKey = process.env.PLASMO_PUBLIC_SUPABASE_ANON_KEY
 
+      console.log('🔍 Environment variables:')
+      console.log('- supabaseUrl:', supabaseUrl ? 'SET' : 'MISSING')
+      console.log('- supabaseKey:', supabaseKey ? 'SET' : 'MISSING')
+
       if (!supabaseUrl || !supabaseKey) {
-        console.error('❌ Supabase configuration missing')
+        console.error('❌ Supabase configuration missing, using fallback values')
         console.error('- PLASMO_PUBLIC_SUPABASE_URL:', supabaseUrl)
         console.error('- PLASMO_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? '[REDACTED]' : 'undefined')
-        return
+        
+        console.log('🔄 Using fallback Supabase configuration')
+        // Continue with fallback values
+      } else {
+        console.log('✅ Environment variables loaded successfully')
       }
+      
+      // Use fallback if needed
+      const finalUrl = supabaseUrl || 'https://kwuzzirstoqjnxpdjkan.supabase.co'
+      const finalKey = supabaseKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3dXp6aXJzdG9xam54cGRqa2FuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTcyMjQsImV4cCI6MjA3MTA5MzIyNH0.U-yxHbJNz--K5mR0IBRdxvl3FZ4wJVVZ1M2eUTvNsk0'
       
       // Get authenticated user ID first
       const userId = await this.getCurrentUserId()
@@ -107,16 +142,16 @@ class BackgroundService {
       // If no user ID found, skip Supabase save (save locally only)
       if (!userId) {
         console.log('ℹ️ No authenticated user found, skipping Supabase save')
-        return
+        return 'no_auth'
       }
 
       // Check if word already exists for this user
       console.log('🔍 Checking if word already exists for this user in Supabase...')
-      const checkResponse = await fetch(`${supabaseUrl}/rest/v1/words?word=eq.${encodeURIComponent(word.english_word)}&user_id=eq.${encodeURIComponent(userId)}&select=id`, {
+      const checkResponse = await fetch(`${finalUrl}/rest/v1/words?word=eq.${encodeURIComponent(word.english_word)}&user_id=eq.${encodeURIComponent(userId)}&select=id`, {
         method: 'GET',
         headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
+          'apikey': finalKey,
+          'Authorization': `Bearer ${finalKey}`,
         }
       })
 
@@ -124,8 +159,7 @@ class BackgroundService {
         const existingWords = await checkResponse.json()
         if (existingWords && existingWords.length > 0) {
           console.log('ℹ️ Vocabeat: Word already exists for this user in Supabase:', word.english_word)
-          this.showNotification('success', `"${word.english_word}" is already in your vocabulary`)
-          return
+          return 'duplicate'
         }
       } else {
         console.log('⚠️ Failed to check existing words:', checkResponse.status, checkResponse.statusText)
@@ -141,11 +175,11 @@ class BackgroundService {
 
       console.log('📤 Vocabeat: Sending to Supabase:', JSON.stringify(wordData, null, 2))
 
-      const response = await fetch(`${supabaseUrl}/rest/v1/words`, {
+      const response = await fetch(`${finalUrl}/rest/v1/words`, {
         method: 'POST',
         headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
+          'apikey': finalKey,
+          'Authorization': `Bearer ${finalKey}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
@@ -168,6 +202,7 @@ class BackgroundService {
         if (responseText) {
           console.log('📄 Response body:', responseText)
         }
+        return 'saved'
       } else {
         const errorText = await response.text()
         console.error('❌ Vocabeat: Supabase save failed:', response.status, response.statusText)
@@ -184,12 +219,15 @@ class BackgroundService {
         // If it's an auth error, just log it but don't show error to user
         if (response.status === 401 || response.status === 403) {
           console.log('ℹ️ Vocabeat: Authentication required for Supabase. Word saved locally only.')
+          return 'no_auth'
         }
+        return 'error'
       }
     } catch (error) {
       console.error('❌ Vocabeat: Network error saving to Supabase:', error)
       console.error('🔍 Error details:', error.message, error.stack)
       console.log('ℹ️ Vocabeat: Word saved locally only.')
+      return 'error'
     }
   }
 
