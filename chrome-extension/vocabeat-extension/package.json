@@ -31,12 +31,17 @@
   "manifest": {
     "host_permissions": [
       "https://translate.google.com/*",
-      "https://*.supabase.co/*"
+      "https://*.supabase.co/*",
+      "http://localhost:3000/*",
+      "https://*.vercel.app/*"
     ],
     "permissions": [
       "storage",
       "activeTab",
-      "notifications"
+      "notifications",
+      "cookies",
+      "scripting",
+      "tabs"
     ]
   }
 }

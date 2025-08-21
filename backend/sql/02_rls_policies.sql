@@ -42,6 +42,15 @@ CREATE POLICY "Users can update own profile" ON public.profiles
 CREATE POLICY "Users can manage own words" ON public.words
     FOR ALL USING (auth.uid() = user_id);
 
+-- Chrome拡張機能からの一時的なデータ保存を許可
+-- 注意: このポリシーは一時的なもので、本格的な認証システム実装後は削除する必要があります
+CREATE POLICY "Allow temporary word insertion from extensions" ON public.words
+    FOR INSERT WITH CHECK (user_id = '00000000-0000-0000-0000-000000000000'::uuid);
+
+-- Chrome拡張機能からの一時的なデータ読み取りを許可
+CREATE POLICY "Allow temporary word reading from extensions" ON public.words
+    FOR SELECT USING (user_id = '00000000-0000-0000-0000-000000000000'::uuid);
+
 -- ================================================================
 -- 4. 学習記録テーブルのポリシー
 -- ================================================================
